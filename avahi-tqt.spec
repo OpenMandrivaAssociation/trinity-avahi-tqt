@@ -5,7 +5,7 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 3
+%define pkg_rel 4
 
 %define tde_pkg avahi-tqt
 
@@ -42,6 +42,7 @@ Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/
 
 BuildSystem:    cmake
 BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
+BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 
 BuildRequires:	libtqt4-devel >= %{tde_epoch}:4.2.0
 
