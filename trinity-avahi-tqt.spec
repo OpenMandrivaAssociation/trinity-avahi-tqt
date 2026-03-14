@@ -5,11 +5,11 @@
 %if "%{?tde_version}" == ""
 %define tde_version 14.1.5
 %endif
-%define pkg_rel 5
 
 %define tde_pkg avahi-tqt
 
-%define libavahi %{_lib}avahi
+%define libname %mklibname %{tde_pkg}
+%define devname %mklibname %{tde_pkg} -d
 
 %undefine __brp_remove_la_files
 %define dont_remove_libtool_files 1
@@ -24,26 +24,21 @@
 Name:		trinity-%{tde_pkg}
 Epoch:		%{tde_epoch}
 Version:	0.6.30
-Release:	%{?tde_version}_%{?!preversion:%{pkg_rel}}%{?preversion:0_%{preversion}}%{?dist}
+Release:	%{?tde_version:%{tde_version}_}6
 Summary:	Avahi TQt integration library
 Group:		System/Libraries
 URL:		http://www.trinitydesktop.org/
 
-%if 0%{?suse_version}
-License:	LGPL-2.0+
-%else
 License:	LGPLv2+
-%endif
 
-
-Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/dependencies/%{tarball_name}-%{tde_version}%{?preversion:~%{preversion}}.tar.xz
+Source0:	https://mirror.ppa.trinitydesktop.org/trinity/releases/R%{tde_version}/main/dependencies/%{tarball_name}-%{tde_version}.tar.xz
 
 BuildSystem:    cmake
 
 BuildOption:    -DCMAKE_BUILD_TYPE="RelWithDebInfo"
 BuildOption:    -DWITH_GCC_VISIBILITY=%{!?with_clang:ON}%{?with_clang:OFF}
 
-BuildRequires:	libtqt4-devel >= %{tde_epoch}:4.2.0
+BuildRequires:	pkgconfig(tqt)
 
 BuildRequires:	trinity-tde-cmake >= %{tde_version}
 
@@ -73,13 +68,6 @@ BuildRequires:  pkgconfig(avahi-client)
 # EXPAT support
 BuildRequires:  pkgconfig(expat)
 
-# NAS support
-# no updates since 2022
-# %if 0%{?fedora} || 0%{?mgaversion} || 0%{?mdkversion}
-# define with_nas 1
-# BuildRequires: nas-devel
-# %endif
-
 # XT support
 BuildRequires:  pkgconfig(xt)
 
@@ -95,15 +83,11 @@ into a TQt main loop application.
 
 ##########
 
-%package -n %{libavahi}-tqt1
+%package -n %{libname}1
 Summary:	Avahi TQt integration library
 Group:		System/Libraries
-Provides:	libavahi-tqt1 = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Obsoletes:		trinity-avahi-tqt < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-avahi-tqt = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description -n %{libavahi}-tqt1
+%description -n %{libname}1
 Avahi is a fully LGPL framework for Multicast DNS Service Discovery.
 It allows programs to publish and discover services and hosts
 running on a local network with no specific configuration. For
@@ -113,32 +97,20 @@ print to, files to look at and people to talk to.
 This library contains the interface to integrate the Avahi libraries
 into a TQt main loop application.
 
-%post -n %{libavahi}-tqt1
-/sbin/ldconfig || :
-
-%postun -n %{libavahi}-tqt1
-/sbin/ldconfig || :
-
-%files -n %{libavahi}-tqt1
+%files -n %{libname}1
 %defattr(-,root,root,-)
 %{_libdir}/libavahi-tqt.so.1
 %{_libdir}/libavahi-tqt.so.1.0.0
 
 ##########
 
-%package -n %{libavahi}-tqt-devel
+%package -n %{devname}
 Summary:	Avahi TQt integration library (Development Files)
 Group:		Development/Libraries/C and C++
-Provides:	libavahi-tqt-devel = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Requires:	%{libavahi}-tqt1 = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	libtqt4-devel >= %{tde_epoch}:4.2.0
-%{?avahi_devel:Requires: %{avahi_devel}}
+Requires:	%{libname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Obsoletes:		trinity-avahi-tqt-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:		trinity-avahi-tqt-devel = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description -n %{libavahi}-tqt-devel
+%description -n %{devname}
 Avahi is a fully LGPL framework for Multicast DNS Service Discovery.
 It allows programs to publish and discover services and hosts
 running on a local network with no specific configuration. For
@@ -148,13 +120,7 @@ print to, files to look at and people to talk to.
 This library contains the interface to integrate the Avahi libraries
 into a TQt main loop application.
 
-%post -n %{libavahi}-tqt-devel
-/sbin/ldconfig || :
-
-%postun -n %{libavahi}-tqt-devel
-/sbin/ldconfig || :
-
-%files -n %{libavahi}-tqt-devel
+%files -n %{devname}
 %defattr(-,root,root,-)
 %{_includedir}/avahi-tqt/
 %{_libdir}/libavahi-tqt.a
