@@ -108,7 +108,7 @@ into a TQt main loop application.
 Summary:	Avahi TQt integration library (Development Files)
 Group:		Development/Libraries/C and C++
 
-Requires:	%{libname} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:	%{libname}1 = %{EVRD}
 
 %description -n %{devname}
 Avahi is a fully LGPL framework for Multicast DNS Service Discovery.
